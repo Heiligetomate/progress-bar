@@ -66,21 +66,46 @@ impl ProgressBar {
         Ok(())
     }
 
-    fn output(&self, progress: f32) -> Result<()> {
+    fn raw_bar_output(&self, progress: f32) -> Result<()> {
         let mut stdout = stdout();
+
+        self.bar(&mut stdout, progress)?;
+
+        stdout.flush()?;
+
+        self.check_if_done(progress);
+
+        Ok(())
+    }
+
+    fn full_output(&self, progress: f32) -> Result<()> {
+        let mut stdout = stdout();
+
         self.bar(&mut stdout, progress)?;
         self.percentage(&mut stdout, progress)?;
+
         stdout.flush()?;
+
+        self.check_if_done(progress);
+
+        Ok(())
+    }
+
+    fn check_if_done(&self, progress: f32) {
         if progress == 1.0 {
             println!("");
         }
-        Ok(())
     }
 }
 
 pub trait OutputBar {
     fn get_bar(&self) -> &ProgressBar;
+
     fn output(&self, progress: f32) -> Result<()> {
-        self.get_bar().output(progress)
+        self.get_bar().raw_bar_output(progress)
+    }
+
+    fn percentage_output(&self, progress: f32) -> Result<()> {
+        self.get_bar().full_output(progress)
     }
 }
