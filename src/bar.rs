@@ -1,9 +1,10 @@
 use std::io::{Result, Write, stdout};
 
 use crossterm::{
-    ExecutableCommand, QueueableCommand, cursor,
+    ExecutableCommand, QueueableCommand,
+    cursor::{self, MoveToColumn},
     style::{Color, Print, ResetColor, SetForegroundColor},
-    terminal,
+    terminal::{self, ClearType},
 };
 
 const DEFAULT_CHAR: char = '▇';
@@ -36,17 +37,19 @@ impl ProgressBar {
         res
     }
 
-    fn output(&self, progress: u16) -> Result<()> {
+    fn output(&self, progress: f32) -> Result<()> {
+        let progress_made = (progress * self.length as f32) as u16;
+
         let mut stdout = stdout();
 
         stdout
             .queue(cursor::Hide)?
+            .queue(MoveToColumn(0))?
             .queue(SetForegroundColor(self.complete_color))?
-            .queue(Print(self.generate_bar(progress)))?
+            .queue(Print(self.generate_bar(progress_made)))?
             .queue(SetForegroundColor(self.incomplete_color))?
-            .queue(Print(self.generate_bar(self.length - progress)))?
+            .queue(Print(self.generate_bar(self.length - progress_made)))?
             .queue(ResetColor)?
-            .queue(terminal::Clear(terminal::ClearType::FromCursorDown))?
             .queue(cursor::Show)?;
 
         stdout.flush()?;
@@ -60,7 +63,7 @@ pub trait GetBar {
 }
 
 pub trait OutputBar: GetBar {
-    fn output(&self) -> Result<()> {
-        self.get_bar().output(5)
+    fn output(&self, progress: f32) -> Result<()> {
+        self.get_bar().output(progress)
     }
 }
