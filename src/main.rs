@@ -17,7 +17,7 @@ impl MyTestStruct {
         let goal_value = 100;
         while self.val <= goal_value {
             let progress = self.val as f32 / goal_value as f32;
-            self.output(progress)?;
+            self.output(progress, true)?;
             sleep(time_per_step);
             self.val += 1;
         }
@@ -27,8 +27,8 @@ impl MyTestStruct {
 }
 
 impl OutputBar for MyTestStruct {
-    fn get_bar(&self) -> &ProgressBar {
-        &self.progress_bar
+    fn get_bar(&mut self) -> &mut ProgressBar {
+        &mut self.progress_bar
     }
 }
 
