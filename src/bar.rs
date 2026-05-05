@@ -1,22 +1,23 @@
-use std::io::{Result, Write, stdout};
+use std::io::{Result, Stdout, Write, stdout};
 
 use crossterm::{
-    ExecutableCommand, QueueableCommand,
+    QueueableCommand,
     cursor::{self, MoveToColumn},
     style::{Color, Print, ResetColor, SetForegroundColor},
-    terminal::{self, ClearType},
 };
 
 const DEFAULT_CHAR: char = '▇';
-const DEFAULT_LENGTH: u16 = 30;
+const DEFAULT_LENGTH: u16 = 100;
 const DEFAULT_COMPLETE_COLOR: Color = Color::Green;
 const DEFAULT_INCOMPLETE_COLOR: Color = Color::Red;
+const DEFAULT_TEXT_COLOR: Color = Color::White;
 
 pub struct ProgressBar {
     length: u16,
     bar_char: char,
     complete_color: Color,
     incomplete_color: Color,
+    text_color: Color,
 }
 
 impl ProgressBar {
@@ -26,6 +27,7 @@ impl ProgressBar {
             bar_char: DEFAULT_CHAR,
             complete_color: DEFAULT_COMPLETE_COLOR,
             incomplete_color: DEFAULT_INCOMPLETE_COLOR,
+            text_color: DEFAULT_TEXT_COLOR,
         }
     }
 
@@ -37,11 +39,9 @@ impl ProgressBar {
         res
     }
 
-    fn output(&self, progress: f32) -> Result<()> {
+    fn bar(&self, stdout: &mut Stdout, progress: f32) -> Result<()> {
         let progress_made = (progress * self.length as f32) as u16;
-
-        let mut stdout = stdout();
-
+        /// TODO: breaks when it goes over one line
         stdout
             .queue(cursor::Hide)?
             .queue(MoveToColumn(0))?
@@ -51,7 +51,27 @@ impl ProgressBar {
             .queue(Print(self.generate_bar(self.length - progress_made)))?
             .queue(ResetColor)?
             .queue(cursor::Show)?;
+        Ok(())
+    }
 
+    fn percentage(&self, stdout: &mut Stdout, progress: f32) -> Result<()> {
+        let percentage_text = format!("{}%", (progress * 100 as f32) as u16);
+        stdout
+            .queue(cursor::Hide)?
+            .queue(MoveToColumn(self.length + 2))?
+            .queue(SetForegroundColor(self.text_color))?
+            .queue(Print(percentage_text))?
+            .queue(ResetColor)?
+            .queue(cursor::Show)?;
+        Ok(())
+    }
+
+    fn output(&self, progress: f32) -> Result<()> {
+        let progress_made = (progress * self.length as f32) as u16;
+
+        let mut stdout = stdout();
+        self.bar(&mut stdout, progress)?;
+        self.percentage(&mut stdout, progress)?;
         stdout.flush()?;
 
         Ok(())

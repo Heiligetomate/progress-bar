@@ -33,5 +33,10 @@ impl OutputBar for MyTestStruct {
 
 fn main() -> std::io::Result<()> {
     let mut foo = MyTestStruct::new(0);
-    foo.calculate(Duration::from_millis(12))
+    println!("meow");
+    foo.calculate(Duration::from_millis(12))?;
+    println!("\nmroew");
+    foo.val = 0;
+    foo.calculate(Duration::from_millis(12))?;
+    Ok(())
 }
