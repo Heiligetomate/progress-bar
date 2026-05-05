@@ -7,7 +7,7 @@ use crossterm::{
 };
 
 const DEFAULT_CHAR: char = '▇';
-const DEFAULT_LENGTH: u16 = 100;
+const DEFAULT_LENGTH: u16 = 20;
 const DEFAULT_COMPLETE_COLOR: Color = Color::Green;
 const DEFAULT_INCOMPLETE_COLOR: Color = Color::Red;
 const DEFAULT_TEXT_COLOR: Color = Color::White;
@@ -41,7 +41,7 @@ impl ProgressBar {
 
     fn bar(&self, stdout: &mut Stdout, progress: f32) -> Result<()> {
         let progress_made = (progress * self.length as f32) as u16;
-        /// TODO: breaks when it goes over one line
+        // TODO: breaks when it goes over one line
         stdout
             .queue(cursor::Hide)?
             .queue(MoveToColumn(0))?
@@ -67,13 +67,13 @@ impl ProgressBar {
     }
 
     fn output(&self, progress: f32) -> Result<()> {
-        let progress_made = (progress * self.length as f32) as u16;
-
         let mut stdout = stdout();
         self.bar(&mut stdout, progress)?;
         self.percentage(&mut stdout, progress)?;
         stdout.flush()?;
-
+        if progress == 1.0 {
+            println!("");
+        }
         Ok(())
     }
 }

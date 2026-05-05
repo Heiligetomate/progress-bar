@@ -12,9 +12,10 @@ impl MyTestStruct {
         let progress_bar = ProgressBar::default();
         Self { val, progress_bar }
     }
+
     fn calculate(&mut self, time_per_step: Duration) -> Result<()> {
         let goal_value = 100;
-        while self.val < goal_value {
+        while self.val <= goal_value {
             let progress = self.val as f32 / goal_value as f32;
             self.output(progress)?;
             sleep(time_per_step);
