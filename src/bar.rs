@@ -58,11 +58,8 @@ impl ProgressBar {
     }
 }
 
-pub trait GetBar {
+pub trait OutputBar {
     fn get_bar(&self) -> &ProgressBar;
-}
-
-pub trait OutputBar: GetBar {
     fn output(&self, progress: f32) -> Result<()> {
         self.get_bar().output(progress)
     }

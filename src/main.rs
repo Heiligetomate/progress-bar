@@ -1,4 +1,4 @@
-use progress_bar::bar::{GetBar, OutputBar, ProgressBar};
+use progress_bar::bar::{OutputBar, ProgressBar};
 use std::io::Result;
 use std::{thread::sleep, time::Duration};
 
@@ -25,13 +25,11 @@ impl MyTestStruct {
     }
 }
 
-impl GetBar for MyTestStruct {
+impl OutputBar for MyTestStruct {
     fn get_bar(&self) -> &ProgressBar {
         &self.progress_bar
     }
 }
-
-impl OutputBar for MyTestStruct {}
 
 fn main() -> std::io::Result<()> {
     let mut foo = MyTestStruct::new(0);
