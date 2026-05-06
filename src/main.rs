@@ -1,5 +1,4 @@
 use progress_bar::bar::{OutputBar, ProgressBar};
-use progress_bar::default_values::*;
 use std::io::Result;
 use std::{thread::sleep, time::Duration};
 

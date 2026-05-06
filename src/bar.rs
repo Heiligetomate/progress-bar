@@ -1,10 +1,10 @@
-use std::io::{Result, Stdout, Write, stdout};
-
+use crate::default_values::*;
 use crossterm::{
     QueueableCommand,
     cursor::{self, MoveToColumn},
     style::{Color, Print, ResetColor, SetForegroundColor},
 };
+use std::io::{Result, Stdout, Write, stdout};
 
 pub struct ProgressBar {
     length: u16,
