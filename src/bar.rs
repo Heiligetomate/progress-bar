@@ -22,6 +22,17 @@ pub struct ProgressBar {
 }
 
 impl ProgressBar {
+    pub fn new(length: u16, bar_char: char, complete_color: Color, incomplete_color: Color, text_color: Color) -> Self {
+        Self {
+            length,
+            bar_char,
+            complete_color,
+            incomplete_color,
+            text_color,
+            running: false,
+        }
+    }
+
     pub const fn default() -> Self {
         Self {
             length: DEFAULT_LENGTH,
