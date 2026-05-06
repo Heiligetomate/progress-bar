@@ -1,4 +1,5 @@
 use progress_bar::bar::{OutputBar, ProgressBar};
+use progress_bar::default_values::*;
 use std::io::Result;
 use std::{thread::sleep, time::Duration};
 
@@ -9,7 +10,7 @@ struct MyTestStruct {
 
 impl MyTestStruct {
     fn new(val: u64) -> Self {
-        let progress_bar = ProgressBar::default();
+        let progress_bar = ProgressBar::new(25, '°', crossterm::style::Color::Cyan, crossterm::style::Color::Yellow, crossterm::style::Color::Red);
         Self { val, progress_bar }
     }
 
@@ -34,9 +35,7 @@ impl OutputBar for MyTestStruct {
 
 fn main() -> std::io::Result<()> {
     let mut foo = MyTestStruct::new(0);
-    println!("meow");
     foo.calculate(Duration::from_millis(12))?;
-    println!("\nmroew");
     foo.val = 0;
     foo.calculate(Duration::from_millis(12))?;
     Ok(())

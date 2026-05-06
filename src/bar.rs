@@ -6,12 +6,6 @@ use crossterm::{
     style::{Color, Print, ResetColor, SetForegroundColor},
 };
 
-const DEFAULT_CHAR: char = '▇';
-const DEFAULT_LENGTH: u16 = 20;
-const DEFAULT_COMPLETE_COLOR: Color = Color::Green;
-const DEFAULT_INCOMPLETE_COLOR: Color = Color::Red;
-const DEFAULT_TEXT_COLOR: Color = Color::White;
-
 pub struct ProgressBar {
     length: u16,
     bar_char: char,
