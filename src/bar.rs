@@ -27,6 +27,10 @@ impl ProgressBar {
         }
     }
 
+    pub fn default_with_length(length: u16) -> Self {
+        Self::new(length, DEFAULT_CHAR, DEFAULT_COMPLETE_COLOR, DEFAULT_INCOMPLETE_COLOR, DEFAULT_TEXT_COLOR)
+    }
+
     pub const fn default() -> Self {
         Self {
             length: DEFAULT_LENGTH,
