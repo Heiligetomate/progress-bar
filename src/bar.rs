@@ -15,6 +15,24 @@ pub struct ProgressBar {
     running: bool,
 }
 
+pub struct Percentage {
+    val: f64,
+}
+
+impl Percentage {
+    pub fn new(val: f64) -> Result<Self> {
+        if val > 1.0 {
+            return Err(std::io::Error::new(std::io::ErrorKind::Other, "The progress is more than 100%"));
+        }
+        Ok(Self { val })
+    }
+
+    pub fn calc(val: f64, max: f64) -> Result<Self> {
+        let res = val / max;
+        Self::new(res)
+    }
+}
+
 impl ProgressBar {
     pub fn new(length: u16, bar_char: char, complete_color: Color, incomplete_color: Color, text_color: Color) -> Self {
         Self {
@@ -50,8 +68,8 @@ impl ProgressBar {
         res
     }
 
-    fn bar(&self, stdout: &mut Stdout, progress: f32) -> Result<()> {
-        let progress_made = (progress * self.length as f32) as u16;
+    fn bar(&self, stdout: &mut Stdout, progress: f64) -> Result<()> {
+        let progress_made = (progress * self.length as f64) as u16;
         // TODO: breaks when it goes over one line
         stdout
             .queue(MoveToColumn(0))?
@@ -63,8 +81,8 @@ impl ProgressBar {
         Ok(())
     }
 
-    fn percentage(&self, stdout: &mut Stdout, progress: f32) -> Result<()> {
-        let percentage_text = format!("{}%", (progress * 100 as f32) as u16);
+    fn percentage(&self, stdout: &mut Stdout, progress: f64) -> Result<()> {
+        let percentage_text = format!("{}%", (progress * 100 as f64) as u16);
         stdout
             .queue(MoveToColumn(self.length + 2))?
             .queue(SetForegroundColor(self.text_color))?
@@ -73,7 +91,8 @@ impl ProgressBar {
         Ok(())
     }
 
-    fn output(&mut self, progress: f32, display_percentage: bool) -> Result<()> {
+    pub fn output(&mut self, percentage: Percentage, display_percentage: bool) -> Result<()> {
+        let progress = percentage.val;
         let mut stdout = stdout();
 
         if !self.running {
@@ -105,8 +124,12 @@ impl ProgressBar {
 pub trait OutputBar {
     fn get_bar(&mut self) -> &mut ProgressBar;
 
-    fn output(&mut self, progress: f32, display_percentage: bool) -> Result<()> {
+    fn output(&mut self, progress: Percentage, display_percentage: bool) -> Result<()> {
         self.get_bar()
             .output(progress, display_percentage)
     }
+}
+
+pub trait MacroOutputBar {
+    fn output(&mut self, display_percentage: bool) -> Result<()>;
 }
